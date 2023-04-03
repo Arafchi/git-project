@@ -4,47 +4,51 @@ def SelectMenu():
     print("2. 계산")
     return int(input())
 
-validCredit = 0
-numOfLecture = 0
+Credits = 0
+## 총학점
+
+CreditScore = 0
+## ∑평점x학점
+
 FCredit = 0
-FNumOfLecture =0
+## F학점
 
 while(SelectMenu() == 1):
     credit = int(input("\n\n학접을 입력하세요:\n"))
-    numOfLecture += 1
+    Credits += credit
+
     match(input("평점을 입력하세요:\n")):
         case 'A+':
-            validCredit += credit * 4.5
+            CreditScore += credit * 4.5
             
         case 'A':
-            validCredit += credit * 4
+            CreditScore += credit * 4
             
         case 'B+':
-            validCredit += credit * 3.5
+            CreditScore += credit * 3.5
             
         case 'B':
-            validCredit += credit * 3
+            CreditScore += credit * 3
             
         case 'C+':
-            validCredit += credit * 2.5
+            CreditScore += credit * 2.5
             
         case 'C':
-            validCredit += credit * 2
+            CreditScore += credit * 2
             
         case 'D+':
-            validCredit += credit * 1.5
+            CreditScore += credit * 1.5
             
         case 'D':
-            validCredit += credit
+            CreditScore += credit * 1
             
         case 'F':
             FCredit += credit
-            FNumOfLecture += 1
             
     print("입력되었습니다.\n\n\n\n")
 
 
 
-print("제출용: " + str(validCredit) + "학점 (GPA: " + str(validCredit/numOfLecture) + ")")
-print("열람용: " + str(validCredit+FCredit) + "학점 (GPA: " + str((validCredit+FCredit)/(numOfLecture+FNumOfLecture)) + ")")
+print("제출용: " + str(Credits - FCredit) + "학점 (GPA: " + str( CreditScore / (Credits-FCredit)) + ")")
+print("열람용: " + str(Credits) + "학점 (GPA: " + str( CreditScore / Credits ) + ")")
 print("\n\n프로그램을 종료합니다.")
