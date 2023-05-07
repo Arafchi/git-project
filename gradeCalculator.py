@@ -1,9 +1,74 @@
 import random
 
-SUBJECT = 0
+COURSE = 0
 CREDIT = 1
 SCORE = 2
 
+class CourseHistory:
+    courseDict = {}
+    def __init__(self):
+        self.courseList = []
+
+
+    @classmethod
+    def AddCourseInDict(cls, courseName):
+            if courseName in CourseHistory.courseDict.values():
+                return
+
+            tempCode = random.randrange(0,10000)
+            while tempCode in CourseHistory.courseDict.keys():
+                tempCode = random.randrange(0,10000)
+
+            CourseHistory.courseDict[tempCode] = courseName
+            return tempCode
+        
+    @classmethod
+    def GetCourseID(cls, courseName):
+        for item in CourseHistory.courseDict.items():
+            if courseName in item:
+                return item[COURSE]
+        return CourseHistory.AddCourseInDict(courseName)
+    
+
+            
+    def AddCourseInfo(self, nCourse, nCredit, nScore):
+        for course, credit, score in self.courseList:
+            if CourseHistory.courseDict[course] == nCourse:
+                if ScoreToInt(score) < ScoreToInt(nScore):
+                    self.courseList.remove((course, credit, score))
+                    self.courseList.append((course, nCredit, nScore))
+                return
+            
+        self.courseList.append((CourseHistory.GetCourseID(nCourse), nCredit, nScore))
+
+    def PrintCourseInfo(self, courseName):
+        for item in self.courseList:
+            if item[COURSE] == CourseHistory.GetCourseID(courseName):
+                print('[' + courseName + '] ' + str(item[CREDIT]) + '학점: ' + item[SCORE])
+    def PrintAllCourseInfo(self):
+        for course, credit, score in self.courseList:
+             print('[' + CourseHistory.courseDict[course] + '] ' + str(credit) + '학점: ' + score)
+    
+    def Calculate(self):
+        Credits = 0
+            ## 총학점
+            
+        CreditScore = 0
+            ## ∑평점x학점
+                    
+        FCredit = 0
+        ## F 학점
+
+        for temp in self.courseList:
+            Credits += temp[CREDIT]
+            CreditScore += temp[CREDIT] * ScoreToInt(temp[SCORE])
+            if temp[SCORE] == "F":
+                FCredit += temp[CREDIT]
+
+        print("\n제출용: " + str(Credits - FCredit) + "학점 (GPA: " + str( CreditScore / (Credits-FCredit)) + ")")
+        print("열람용: " + str(Credits) + "학점 (GPA: " + str( CreditScore / Credits ) + ")")  
+                            
+                
 def ScoreToInt(s):
     match(s):
         case "A+":
@@ -24,71 +89,44 @@ def ScoreToInt(s):
             return 1.0
         case "F":
             return 0
+    return None
 
-def AddSubjectInDict(subjectName):
-    temp = str(random.randrange(0,10000))
-    while temp in subjectDict:              # 과목코드가 겹치지 않으면
-        temp = str(random.randrange(0,10000))
-    subjectDict[temp] = subject
 
-def GetSubjectID(subjectName):
-    for item in subjectDict.items():
-        if subjectName in item:
-            return item[SUBJECT]
+
+
         
 ###########################################################################################
-subjectDict = {}
-creditList = []
 
+history = CourseHistory()
 
 while(True):
     print("\n\n작업을 선택하세요.")
     print("1. 입력")
     print("2. 출력")
-    print("3. 계산")
+    print("3. 조회")
+    print("4. 계산")
+    print("5. 종료")
     match(input()):
         case '1':
-            subject = input("\n과목명을 입력하세요:\n")
+            course = input("\n과목명을 입력하세요:\n")
             credit = int(input("학점을 입력하세요:\n"))
             score = input("평점을 입력하세요:\n")
             
-            if subject in subjectDict.values():  # 이전에 입력받은 똑같은 과목이 있다면
-                for tSubject, tCredit, tScore in creditList:      
-                    if subjectDict[tSubject] == subject:  # creditList에서 똑같은 과목의 정보를 발견하면
-                        if ScoreToInt(tScore) < ScoreToInt(score):
-                            creditList.remove(tuple((tSubject,tCredit,tScore)))
-                            creditList.append(tuple((tSubject,credit,score)))
-                        break;
-            else:
-                AddSubjectInDict(subject)
-                creditList.append(tuple((GetSubjectID(subject), credit, score)))
-                
+            history.AddCourseInfo(course, credit, score)
             print("입력되었습니다.\n\n\n")
 
 
         case '2':
-            for item in creditList:
-                print('[' + subjectDict[item[SUBJECT]] + '] ' + str(item[1]) + '학점: ' + item[2])
-
-
+            history.PrintAllCourseInfo()
+            
         case '3':
-            Credits = 0
-            ## 총학점
+            course = input("\n과목명을 입력하세요:\n")
+            history.PrintCourseInfo(course)
             
-            CreditScore = 0
-            ## ∑평점x학점
+        case '4':
+            history.Calculate()
             
-            FCredit = 0
-            ## F 학점
-
-            for temp in creditList:
-                Credits += temp[CREDIT]
-                CreditScore += temp[CREDIT] * ScoreToInt(temp[SCORE])
-                if temp[SCORE] == "F":
-                    FCredit += temp[CREDIT]
-
-            print("\n제출용: " + str(Credits - FCredit) + "학점 (GPA: " + str( CreditScore / (Credits-FCredit)) + ")")
-            print("열람용: " + str(Credits) + "학점 (GPA: " + str( CreditScore / Credits ) + ")")  
+        case '5':
             break;
 
 print("\n\n프로그램을 종료합니다.")
